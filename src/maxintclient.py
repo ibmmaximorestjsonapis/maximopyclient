@@ -4,7 +4,7 @@ Created on Jul 28, 2020
 @author: AnamitraBhattacharyy
 '''
 
-from MaximoConnector import MaximoConnector
+from src.MaximoConnector import MaximoConnector
 import json
 import time
 

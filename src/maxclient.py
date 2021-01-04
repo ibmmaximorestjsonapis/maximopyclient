@@ -4,9 +4,9 @@ Created on Jul 28, 2020
 @author: AnamitraBhattacharyy
 '''
 
-from WhereClause import WhereClause
-from MaximoConnector import MaximoConnector
-from selectclause import SelectClause
+from src.WhereClause import WhereClause
+from src.MaximoConnector import MaximoConnector
+from src.selectclause import SelectClause
 import json
 import time
 
@@ -26,7 +26,7 @@ select_clause = SelectClause(props=props2)
 resp = asset_set.fetch_first_page(select_clause=select_clause, stream=False, stable=False)
 ms2 = int(round(time.time() * 1000))
 print("time="+str(ms2-ms1))
-#print(json.dumps(resp))
+print(json.dumps(resp))
 
 
 where_filter = WhereClause()

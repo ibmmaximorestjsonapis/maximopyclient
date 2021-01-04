@@ -7,8 +7,8 @@ Created on Jul 28, 2020
 
 import requests
 import json
-from OSResource import OSResource
-from service import Service
+from src.OSResource import OSResource
+from src.service import Service
 import base64
 
 
