@@ -4,14 +4,14 @@ Created on Jul 28, 2020
 @author: AnamitraBhattacharyy
 '''
 
-from src.WhereClause import WhereClause
-from src.MaximoConnector import MaximoConnector
-from src.selectclause import SelectClause
+from mxconnector.WhereClause import WhereClause
+from mxconnector.MaximoConnector import MaximoConnector
+from mxconnector.selectclause import SelectClause
 import json
 import time
 
 
-maxcon = MaximoConnector(url="http://vmmxperf1.fyre.ibm.com:9080/maximo/oslc",apikey="1m34e43s71t2hm5pust15kr5lpf1l1prd7289a6q")
+maxcon = MaximoConnector(url="http://vmmxperf1.fyre.ibm.com:9080/maximo/oslc", apikey="1m34e43s71t2hm5pust15kr5lpf1l1prd7289a6q")
 #maxcon = MaximoConnector(url="http://vmmxperf1.fyre.ibm.com:9080/maximo/oslc",user="wilson", password="wilson")
 
 #print(maxcon.whoami(False,False))

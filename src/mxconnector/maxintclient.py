@@ -4,13 +4,13 @@ Created on Jul 28, 2020
 @author: AnamitraBhattacharyy
 '''
 
-from src.MaximoConnector import MaximoConnector
+from mxconnector.MaximoConnector import MaximoConnector
 import json
 import time
 
 
 #maxcon = MaximoConnector(url="http://localhost:7001/maximo/oslc",apikey="7j0d5ib3uugbl3jjiefn4597i8sjppcrj1ucbd0r")
-maxcon = MaximoConnector(url="http://localhost:7001/meaweb",apikey="7j0d5ib3uugbl3jjiefn4597i8sjppcrj1ucbd0r")
+maxcon = MaximoConnector(url="http://localhost:7001/meaweb", apikey="7j0d5ib3uugbl3jjiefn4597i8sjppcrj1ucbd0r")
 
 #print(maxcon.whoami(False,False))
 #apikey = maxcon.regenerateApiKey()

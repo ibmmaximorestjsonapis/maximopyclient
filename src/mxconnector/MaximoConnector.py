@@ -7,8 +7,8 @@ Created on Jul 28, 2020
 
 import requests
 import json
-from src.OSResource import OSResource
-from src.service import Service
+from mxconnector.OSResource import OSResource
+from mxconnector.service import Service
 import base64
 
 
