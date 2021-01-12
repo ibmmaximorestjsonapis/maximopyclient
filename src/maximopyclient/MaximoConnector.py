@@ -7,8 +7,8 @@ Created on Jul 28, 2020
 
 import requests
 import json
-from mxconnector.OSResource import OSResource
-from mxconnector.service import Service
+from maximopyclient.OSResource import OSResource
+from maximopyclient.service import Service
 import base64
 
 
