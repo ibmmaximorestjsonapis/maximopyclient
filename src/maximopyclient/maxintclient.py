@@ -8,7 +8,7 @@ from maximopyclient.MaximoConnector import MaximoConnector
 import json
 import time
 
-
+#sample maximo client
 #maxcon = MaximoConnector(url="http://localhost:7001/maximo/oslc",apikey="7j0d5ib3uugbl3jjiefn4597i8sjppcrj1ucbd0r")
 maxcon = MaximoConnector(url="http://localhost:7001/meaweb", apikey="7j0d5ib3uugbl3jjiefn4597i8sjppcrj1ucbd0r")
 
