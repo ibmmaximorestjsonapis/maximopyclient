@@ -1,4 +1,6 @@
-# Default ignored files
+/build/
+/dist/
+/src/maximopyclient.egg-info*/
 /shelf/
 /workspace.xml
 /maximopyclient.iml
