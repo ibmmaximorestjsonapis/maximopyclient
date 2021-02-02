@@ -20,7 +20,7 @@ class MaximoConnector:
         self.query_params = {}
         self.header_params = {}
         self.session = session
-        #self.sessionid = None
+        self.sessionid = None
         if apikey is not None:
             self.header_params['apikey'] = apikey
             if session==True:
@@ -54,14 +54,12 @@ class MaximoConnector:
             params = self.query_params
         else:
             params.update(self.query_params)
-        for k in params:
-            print(k+"="+params[k])
         if self.sessionid is not None:
             if cookies is None:
                 cookies = {}
             cookies['JSESSIONID'] = self.sessionid
-        resp = requests.post(uri, params=params, headers=headers, data=data, cookies=cookies)
-        if resp.status_code>=400:
+        resp = requests.post(uri, params=params, headers=headers, json=data, cookies=cookies)
+        if resp.status_code >= 400:
             raise Exception(resp.json()["Error"]["message"])
         return resp
     
@@ -75,26 +73,21 @@ class MaximoConnector:
             params = self.query_params
         else:
             params.update(self.query_params)
-        for k in params:
-            print(k+"="+str(params[k]))
-        print((params['oslc.pageSize']))
         resp = requests.get(uri, params=params, headers=headers)
         if resp.status_code>=400:
             raise Exception(resp.json()["Error"]["message"])
         return resp
 
+    def os_resource(self, os_name):
+        return OSResource(os_name, self)
     
-    def os_resource(self, osName):
-        return OSResource(osName, self)  
-    
-    def service_resource(self, serviceName):
-        return Service(serviceName, self)    
+    def service_resource(self, service_name):
+        return Service(service_name, self)
   
-    
-    def whoami(self, addApps, wcsyscfg):
-        if addApps==True:
+    def whoami(self, add_apps, wcsyscfg):
+        if add_apps:
             self.query_params["addapps"] = "1"
-        elif wcsyscfg==True:
+        elif wcsyscfg:
             self.query_params["wcsyscfg"] = "1"
         tgt_uri = self.url+"/whoami"
         return self.do_get(tgt_uri).json()
@@ -125,8 +118,7 @@ class MaximoConnector:
 
     def regenerate_apikey(self, expiration=-1):
         tgt_uri = self.url+"/apitoken/create"
-        data = {}
-        data['expiration'] = expiration
+        data = {'expiration': expiration}
         resp = self.do_post(tgt_uri, data=json.dumps(data))
         if resp.status_code>=400:
             raise Exception(resp.json()["Error"]["message"])
@@ -134,7 +126,6 @@ class MaximoConnector:
         self.header_params['apikey'] = apikey
         return apikey
 
-    
     def revoke_apikey(self):
         tgt_uri = self.url+"/apitoken/revoke"
         self.do_post(tgt_uri)

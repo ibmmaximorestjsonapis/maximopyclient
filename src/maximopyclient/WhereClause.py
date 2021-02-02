@@ -37,12 +37,14 @@ class WhereClause:
     def saved_query(self, saved_query_name):
         print("start where clause " + saved_query_name)
         self.filter_params["savedQuery"] = saved_query_name
+        return self
         
     def op_mode_or(self, is_or):
         if is_or:
             self.filter_params["opmodeor"] = "1"
         else:
             del self.filter_params["opmodeor"]
+        return self
     
     def op_in(self, attr, values):
         curr_where = self.__where_for_anding()
@@ -53,42 +55,49 @@ class WhereClause:
         in_clause = "["+in_clause+"]"
         curr_where += attr + " in " + in_clause
         self.filter_params['oslc.where'] = curr_where
+        return self
         
     def op_equals(self, attr, val):
         curr_where = self.__where_for_anding()
         eq_clause = attr+"="+self.__val_to_token(val)
         curr_where += eq_clause
         self.filter_params['oslc.where'] = curr_where
+        return self
 
     def op_not_equals(self, attr, val):
         curr_where = self.__where_for_anding()
         eq_clause = attr+"!="+self.__val_to_token(val)
         curr_where += eq_clause
         self.filter_params['oslc.where'] = curr_where
+        return self
         
     def op_greater_than(self, attr, val):
         curr_where = self.__where_for_anding()
         eq_clause = attr+">"+self.__val_to_token(val)
         curr_where += eq_clause
         self.filter_params['oslc.where'] = curr_where
+        return self
     
     def op_greater_than_equals(self, attr, val):
         curr_where = self.__where_for_anding()
         eq_clause = attr+">="+self.__val_to_token(val)
         curr_where += eq_clause
         self.filter_params['oslc.where'] = curr_where
+        return self
 
     def op_less_than_equals(self, attr, val):
         curr_where = self.__where_for_anding()
         eq_clause = attr+"<="+self.__val_to_token(val)
         curr_where += eq_clause
         self.filter_params['oslc.where'] = curr_where
+        return self
 
     def ops_less_than(self, attr, val):
         curr_where = self.__where_for_anding()
         eq_clause = attr+"<"+self.__val_to_token(val)
         curr_where += eq_clause
         self.filter_params['oslc.where'] = curr_where
+        return self
 
     def op_not_in(self, attr, values):
         curr_where = self.__where_for_anding()
@@ -99,12 +108,14 @@ class WhereClause:
         inClause = '"['+inClause+']"'
         curr_where += attr + " != " + inClause
         self.filter_params['oslc.where'] = curr_where
+        return self
         
     def op_is_not_null(self, attr):
         curr_where = self.__where_for_anding()
         eq_clause = attr+"="+'"*"'
         curr_where += eq_clause
         self.filter_params['oslc.where'] = curr_where
+        return self
         
     def filter_domain(self, domain_name, site, org):
         self.filter_params['_fd'] = domain_name
@@ -112,6 +123,7 @@ class WhereClause:
             self.filter_params['_fdsite'] = site
         if org is not None:
             self.filter_params['_fdorg'] = org
+        return self
 
     def domain_internal_where(self, attr, eq, values):
         in_clause = attr
@@ -122,12 +134,14 @@ class WhereClause:
         if eq == False:
             op = "!="
         self.filter_params['domaininternalwhere'] = attr + op + '[' + in_clause + ']'
+        return self
 
     def op_is_null(self, attr):
         curr_where = self.__where_for_anding()
         eq_clause = attr+"!="+'"*"'
         curr_where += eq_clause
         self.filter_params['oslc.where'] = curr_where
+        return self
 
     def search_terms(self, terms, attrs):
         search_terms = ""
@@ -140,3 +154,4 @@ class WhereClause:
             for attr in attrs: 
                 search_attrs += '"'+attr+'",'
             self.filter_params['searchAttributes'] = search_attrs
+        return self

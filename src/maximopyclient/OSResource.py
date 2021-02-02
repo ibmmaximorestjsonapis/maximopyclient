@@ -11,9 +11,10 @@ class OSResource:
         self.name = name
         self.conn = conn
         self.ctx = "/os/"
+        self.next_page_uri = None
 
     def fetch_resource(self, uri, select_clause, stream=False):
-        if stream == True:
+        if stream:
             self.ctx = "/stream/"
         else:
             self.ctx = "/os/"
@@ -28,14 +29,15 @@ class OSResource:
             self.conn.do_get(uri, params=params, headers=self.header_params)
 
     def fetch_all(self, where_clause=None, select_clause=None, uri=None, params=None, data_format="JSON", stream=False):
-        if stream==True:
+        if stream:
             self.ctx = "/stream/"
         else:
             self.ctx = "/os/"
 
         if params is None:
             params = {}
-        if data_format== "CSV" or data_format== "XML":
+        params["ignorecollectionref"] = "1"
+        if data_format== "CSV" or data_format == "XML":
             params["_format"] = data_format
         if where_clause is not None:
             params.update(where_clause.params())
@@ -56,15 +58,15 @@ class OSResource:
 
     def fetch_first_page(self, where_clause=None, uri=None, select_clause=None, page_size=1000, stable=True, stream=False):
 
-        if stream == True:
+        if stream:
             self.ctx = "/stream/"
         else:
             self.ctx = "/os/"
 
         if stable == True and self.conn.session == False:
             raise Exception("stable paging not supported without session")
-        params = {}
-        params['oslc.pageSize'] = page_size
+
+        params = {'oslc.pageSize': page_size,'ignorecollectionref': '1'}
         if where_clause is not None:
             params.update(where_clause.params())
         if select_clause is not None:
@@ -80,7 +82,8 @@ class OSResource:
             raise Exception(resp.json()["Error"]["message"])
         self.conn.session = resp.cookies['JSESSIONID']
         resp_data = resp.json()
-        self.next_page_uri = resp_data['responseInfo']['nextPage']
+        if 'nextPage' in resp_data['responseInfo']:
+            self.next_page_uri = resp_data['responseInfo']['nextPage']['href']
         return resp_data
 
     def has_next_page(self):
@@ -88,11 +91,16 @@ class OSResource:
 
     def fetch_next_page(self):
         if self.next_page_uri is not None:
+            print("next page")
+            print(self.next_page_uri)
             resp = self.conn.do_get(self.next_page_uri)
             if resp.status_code>=400:
                 raise Exception(resp.json()["Error"]["message"])
             resp_data = resp.json()
-            self.next_page_uri = resp_data['responseInfo']['nextPage']
+            self.next_page_uri = None
+            if 'nextPage' in resp_data['responseInfo']:
+                self.next_page_uri = resp_data['responseInfo']['nextPage']['href']
+
             return resp_data
         else:
             raise Exception("no next page")
@@ -110,40 +118,45 @@ class OSResource:
         if select_clause is not None:
             return resp.json()
         else:
-            return resp.heders['location']
+            return resp.headers['location']
 
     def replace(self, json_data, uri, select_clause=None):
         if uri is None:
-            raise Exception("missing uri")
+            uri = json_data['href']
+            if uri is None:
+                raise Exception("missing uri")
 
         headers={}
         if select_clause is not None:
             headers['properties'] = select_clause.to_string()
-        headers['x-method-override']='PATCH'
+        headers['x-method-override'] = 'PATCH'
         resp = self.conn.do_post(uri, params={}, headers=headers, data=json_data)
         if resp.status_code >= 400:
             raise Exception(resp.json()["Error"]["message"])
         return resp.json()
 
-    def merge(self, json_data, uri, select_clause=None):
+    def merge(self, json_data, uri=None, select_clause=None):
         if uri is None:
-            raise Exception("missing uri")
+            uri = json_data['href']
+            if uri is None:
+                raise Exception("missing uri")
         headers={}
         if select_clause is not None:
             headers['properties'] = select_clause.to_string()
 
         headers['x-method-override']='PATCH'
-        headers['patchtype']='MERGE'
+        headers['patchtype'] = 'MERGE'
+        headers['content-type'] = 'application/json'
         resp = self.conn.do_post(uri, params={}, headers=headers, data=json_data)
         if resp.status_code >= 400:
             raise Exception(resp.json()["Error"]["message"])
-        return resp.json()
+        elif resp.status_code == 200:
+            return resp.json()
 
     def sync(self, json_data, uri=None, select_clause=None):
         if uri is None:
             uri = self.conn.url+"/os/"+self.name.lower()
-        headers={}
-        headers['x-method-override']='SYNC'
+        headers = {'x-method-override': 'SYNC'}
         if select_clause is not None:
             headers['properties'] = select_clause.to_string()
         resp = self.conn.do_post(uri, params={}, headers=headers, data=json_data)
@@ -154,8 +167,7 @@ class OSResource:
     def delete(self, uri):
         if uri is None:
             raise Exception("missing uri")
-        headers={}
-        headers['x-method-override']='DELETE'
+        headers = {'x-method-override': 'DELETE'}
         resp = self.conn.do_post(uri, params={}, headers=headers)
         if resp.status_code >= 400:
             raise Exception(resp.json()["Error"]["message"])
@@ -164,7 +176,7 @@ class OSResource:
     def bulk(self, json_data, uri=None, select_clause=None):
         if uri is None:
             raise Exception("missing uri")
-        headers={}
+        headers = {}
         if select_clause is not None:
             headers['properties'] = select_clause.to_string()
         headers['x-method-override'] = 'BULK'
@@ -177,8 +189,7 @@ class OSResource:
         if uri is None:
             uri = self.conn.url+"/os/"+self.name.lower()
         headers = {}
-        params = {}
-        params['action'] = action_name
+        params = {'action': action_name}
         resp = self.conn.do_get(uri, params=params, headers=headers)
         if resp.status_code >= 400:
             raise Exception(resp.json()["Error"]["message"])
@@ -188,8 +199,7 @@ class OSResource:
         if uri is None:
             uri = self.conn.url+"/os/"+self.name.lower()
         headers = {}
-        params = {}
-        params['action'] = action_name
+        params = {'action': action_name}
         resp = self.conn.do_post(uri, params=params, headers=headers, data=data)
         if resp.status_code >= 400:
             raise Exception(resp.json()["Error"]["message"])
@@ -203,10 +213,9 @@ class OSResource:
         if select_clause is not None:
             headers['properties'] = select_clause.to_string()
 
-        params = {}
-        params['action'] = "new"
+        params = {'action': "new"}
         resp = self.conn.do_get(uri, params=params, headers=headers)
-        if resp.status_code>=400:
+        if resp.status_code >= 400:
             raise Exception(resp.json()["Error"]["message"])
         return resp.json()
 
@@ -218,8 +227,7 @@ class OSResource:
         if select_clause is not None:
             headers['properties'] = select_clause.to_string()
 
-        params = {}
-        params['action'] = "duplicate"
+        params = {'action': "duplicate"}
         resp = self.conn.do_get(uri, params=params, headers=headers)
         if resp.status_code >= 400:
             raise Exception(resp.json()["Error"]["message"])
