@@ -10,9 +10,8 @@ class Schema:
     classdocs
     '''
 
+    def __init__(self, name, conn):
+        self.name = name
+        self.conn = conn
+        self.ctx = "/jsoncshemas/"
 
-    def __init__(self, params):
-        '''
-        Constructor
-        '''
-        

@@ -9,7 +9,6 @@ from datetime import date, datetime, time
 class WhereClause:
     
     def __init__(self):
-        print("start where clause")
         self.filter_params = {}
         
     def params(self):
@@ -35,7 +34,6 @@ class WhereClause:
         return tok
 
     def saved_query(self, saved_query_name):
-        print("start where clause " + saved_query_name)
         self.filter_params["savedQuery"] = saved_query_name
         return self
         
@@ -131,7 +129,7 @@ class WhereClause:
             in_clause += val+","
         in_clause = in_clause[:len(in_clause)-1]
         op = "="
-        if eq == False:
+        if not eq:
             op = "!="
         self.filter_params['domaininternalwhere'] = attr + op + '[' + in_clause + ']'
         return self

@@ -91,8 +91,6 @@ class OSResource:
 
     def fetch_next_page(self):
         if self.next_page_uri is not None:
-            print("next page")
-            print(self.next_page_uri)
             resp = self.conn.do_get(self.next_page_uri)
             if resp.status_code>=400:
                 raise Exception(resp.json()["Error"]["message"])
@@ -204,6 +202,22 @@ class OSResource:
         if resp.status_code >= 400:
             raise Exception(resp.json()["Error"]["message"])
         return resp.text()
+
+    def invoke_method(self, action_name, data=None, uri=None, params=None):
+        if uri is None:
+            # uri = self.conn.url+"/os/"+self.name.lower()
+            uri = data['href']
+        headers = {'x-method-override': 'PATCH', 'patchtype': 'MERGE', 'content-type': 'application/json'}
+
+        action = 'wsmethod:'+str(action_name)
+        params = {'action': action}
+        resp = self.conn.do_post(uri, params=params, headers=headers, data=data)
+
+        if resp.status_code >= 400:
+            raise Exception(resp.json()["Error"]["message"])
+        if resp.json is not None:
+            return resp.json()
+        return resp
 
     def new(self, uri=None, select_clause=None):
         if uri is None:
