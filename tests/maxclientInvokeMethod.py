@@ -5,7 +5,6 @@ Created on Jul 28, 2020
 '''
 
 import maximopyclient
-import ibm_db
 
 maxcon = maximopyclient.MaximoConnector(url="http://localhost:7001/maximo/api",
                                         apikey="n3i5idbad2omci5an3cnn7e5m4fmka29tr40t2h0", session=True)
